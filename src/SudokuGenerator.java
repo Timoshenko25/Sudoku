@@ -18,7 +18,6 @@ public class SudokuGenerator {
         }
         return false;
     }
-
     public JTextField[][] generateRandomSudoku(JTextField[][] grid,int k) {
         int N = 9;
         Double SRNd = Math.sqrt(9);
