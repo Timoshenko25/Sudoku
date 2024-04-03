@@ -3,10 +3,11 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
 
-class SudokuGUI extends JFrame {
+class SudokuGUI extends JFrame{
     private JPanel buttonSelectionPanel;
 
     public void start() {
@@ -128,7 +129,7 @@ class SudokuGUI extends JFrame {
         gridPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         JPanel buttonPanel = new JPanel();
         int i = 1;
-        buttonPanel.setLayout(new GridLayout(3, 2));
+        buttonPanel.setLayout(new GridLayout(3, 1));
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 3; ++x) {
                 JButton but = new JButton(String.valueOf(i));
@@ -138,8 +139,31 @@ class SudokuGUI extends JFrame {
                 i++;
             }
         }
-        JTextField textField = new JTextField(5);
-        fillTextField(1,sudButtons,coordinatesButtton,grid);
+        JButton button1 = new JButton("Новая игра");
+        JButton button2 = new JButton("Подсказка");
+        JButton button3 = new JButton("Проверка");
+        button1.setBackground(Color.CYAN);
+        button2.setBackground(Color.CYAN);
+        button3.setBackground(Color.CYAN);
+        button1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button3.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        Box topPanel = Box.createHorizontalBox();
+        topPanel.add(Box.createHorizontalGlue());
+        topPanel.add(button1);
+        topPanel.add(Box.createHorizontalStrut(10));
+        topPanel.add(button2);
+        topPanel.add(Box.createHorizontalGlue());
+        Box bottomPanel = Box.createHorizontalBox();
+        bottomPanel.add(Box.createHorizontalGlue());
+        bottomPanel.add(button3);
+        bottomPanel.add(Box.createHorizontalGlue());
+        mainPanel.add(topPanel);
+        mainPanel.add(buttonPanel);
+        mainPanel.add(bottomPanel);
+        fillTextField(sudButtons,mapFieldToCoordinates,grid);
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -150,7 +174,7 @@ class SudokuGUI extends JFrame {
         frame.add(gridPanel, gbc);
         gbc.gridx = 1;
         gbc.gridy = 0;
-        frame.add(buttonPanel, gbc);
+        frame.add(mainPanel, gbc);
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
@@ -159,24 +183,26 @@ class SudokuGUI extends JFrame {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-    public void fillTextField(int number,JButton[][] sudButtons,Map<JButton, Point> coordinatesButtton,JTextField[][] grid) {
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                sudButtons[i][j].addActionListener(new ActionListener() {
+    public void fillTextField(JButton[][] sudButtons, Map<JTextField, Point> mapFieldToCoordinates, JTextField[][] grid) {
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                final int x = i;
+                final int y = j;
+                sudButtons[i/3][j/3].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         JButton button = (JButton) e.getSource();
-                        Point buttonCoord = coordinatesButtton.get(button);
+                        Point buttonCoord = mapFieldToCoordinates.get(button);
                         int buttonX = buttonCoord.x;
                         int buttonY = buttonCoord.y;
                         JTextField textField = grid[buttonY][buttonX];
                         textField.setText(button.getText());
-
                     }
                 });
             }
         }
     }
+
 }
 
 
