@@ -5,15 +5,27 @@ import java.util.HashMap;
 public class SudokuGenerator {
     final JTextField[][] grid = new JTextField[9][9];
     HashMap<JTextField, Point> mapFieldToCoordinates = new HashMap<>();
+    public boolean checkSudoku(JTextField[][] grid){
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (!grid[i][j].getText().isEmpty() && grid[i][j].getText().matches("\\d+")) {
+                    int a = Integer.parseInt(grid[i][j].getText());
+                    if (CheckIfSafe(grid, i, j, a)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
-    public JTextField[][] generateRandomSudoku(JTextField[][] grid) {
+    public JTextField[][] generateRandomSudoku(JTextField[][] grid,int k) {
         int N = 9;
         Double SRNd = Math.sqrt(9);
         int SRN = SRNd.intValue();
-        int K=20;
         fillDiagonal(grid);
-        fillRemaining(grid,0,SRN);
-        removeKDigits(grid);
+        fillRemaining(grid, 0, SRN);
+        removeKDigits(grid,k);
         return grid;
     }
 
@@ -95,23 +107,24 @@ public class SudokuGenerator {
                 grid[i][j].setText(String.valueOf(num));
                 if (fillRemaining(grid, i, j + 1))
                     return true;
-                grid[i][j].setText("");
+                grid[i][j].setText(" ");
             }
         }
         return false;
     }
 
-    public void removeKDigits(JTextField[][] grid) {
-        int count = 40;
+    public void removeKDigits(JTextField[][] grid,int k) {
+        int count = k;
         while (count != 0) {
             int cellId = randomGenerator(9 * 9) - 1;
             int i = (cellId / 9);
             int j = cellId % 9;
             if (j != 0)
                 j = j - 1;
-            if (!grid[i][j].getText().equals("")) {
+            if (!grid[i][j].getText().equals(" ")) {
                 count--;
-                grid[i][j].setText("");
+                grid[i][j].setText(" ");
             }
         }
-    }}
+    }
+}
