@@ -7,8 +7,13 @@ public class SudokuGenerator {
     HashMap<JTextField, Point> mapFieldToCoordinates = new HashMap<>();
 
     public JTextField[][] generateRandomSudoku(JTextField[][] grid) {
+        int N = 9;
+        Double SRNd = Math.sqrt(9);
+        int SRN = SRNd.intValue();
+        int K=20;
         fillDiagonal(grid);
-        fillRemaining(grid, 0, 0);
+        fillRemaining(grid,0,SRN);
+        removeKDigits(grid);
         return grid;
     }
 
@@ -49,25 +54,21 @@ public class SudokuGenerator {
     }
 
     boolean unUsedInRow(JTextField[][] grid, int i, int num) {
-        for (int j = 0; j < 9; j++) {
-            if (j < grid[i].length && grid[i][j].getText().equals(String.valueOf(num))) {
+        for (int j = 0; j < 9; j++)
+            if (j < grid[i].length && grid[i][j].getText().equals(String.valueOf(num)))
                 return false;
-            }
-        }
         return true;
     }
 
     boolean unUsedInCol(JTextField[][] grid, int j, int num) {
-        for (int i = 0; i < 9; i++) {
-            if (i < grid.length && grid[i][j].getText().equals(String.valueOf(num))) {
+        for (int i = 0; i < 9; i++)
+            if (i < grid.length && grid[i][j].getText().equals(String.valueOf(num)))
                 return false;
-            }
-        }
         return true;
     }
 
     boolean fillRemaining(JTextField[][] grid, int i, int j) {
-        if (i >= 9 - 1 && j >= 9) {
+        if (i < 8 && j >= 9) {
             i = i + 1;
             j = 0;
         }
@@ -77,11 +78,11 @@ public class SudokuGenerator {
         if (i < 3) {
             if (j < 3)
                 j = 3;
-        } else if (i < 9 - 3) {
+        } else if (i < 6) {
             if (j == (int) (i / 3) * 3)
                 j = j + 3;
         } else {
-            if (j == 9 - 3) {
+            if (j == 6) {
                 i = i + 1;
                 j = 0;
                 if (i >= 9)
@@ -101,7 +102,7 @@ public class SudokuGenerator {
     }
 
     public void removeKDigits(JTextField[][] grid) {
-        int count = 20;
+        int count = 40;
         while (count != 0) {
             int cellId = randomGenerator(9 * 9) - 1;
             int i = (cellId / 9);
@@ -110,7 +111,7 @@ public class SudokuGenerator {
                 j = j - 1;
             if (!grid[i][j].getText().equals("")) {
                 count--;
-                grid[i][j].setText(" ");
+                grid[i][j].setText("");
             }
         }
     }}
