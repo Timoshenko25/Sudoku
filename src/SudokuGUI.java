@@ -9,6 +9,7 @@ import java.util.Map;
 class SudokuGUI extends JFrame {
     private JPanel buttonSelectionPanel;
 
+    // метод для создания первого frame, где будет выбираться сложность игры
     public void start() {
         JFrame frame = new JFrame("Игра Судоку");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,25 +49,26 @@ class SudokuGUI extends JFrame {
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
-                createNewGameWindow(40);
+                createNewGameWindow(5);
             }
         });
 
         button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
-                createNewGameWindow(55);
+                createNewGameWindow(50);
             }
         });
 
         button3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
-                createNewGameWindow(65);
+                createNewGameWindow(60);
             }
         });
     }
 
+    //метод для создания основного окна,где будет заполнятся матрица с (клавиатуры)
     private void createNewGameWindow(int k) {
         Font FONT = new Font("Times New Roman", Font.CENTER_BASELINE, 20);
         final int dimension = 9;
@@ -88,7 +90,7 @@ class SudokuGUI extends JFrame {
             }
         }
         SudokuGenerator g = new SudokuGenerator();
-        JTextField[][] generatedSudoku = g.generateRandomSudoku(grid,k);
+        JTextField[][] generatedSudoku = g.generateRandomSudoku(grid, k);
         for (int y = 0; y < 9; ++y) {
             for (int x = 0; x < 9; ++x) {
                 grid[y][x].setText(generatedSudoku[y][x].getText());
@@ -138,7 +140,6 @@ class SudokuGUI extends JFrame {
                 i++;
             }
         }
-        fillTextField(sudButtons,mapFieldToCoordinates, grid,coordinatesButtton);
         JButton button1 = new JButton("Новая игра");
         JButton button2 = new JButton("Подсказка");
         JButton button3 = new JButton("Проверка");
@@ -148,7 +149,6 @@ class SudokuGUI extends JFrame {
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
         button2.setAlignmentX(Component.CENTER_ALIGNMENT);
         button3.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JTextField field1 = new JTextField();
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         Box topPanel = Box.createHorizontalBox();
@@ -183,59 +183,79 @@ class SudokuGUI extends JFrame {
         frame.setSize(800, 500);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
+        JTextField field1 = new JTextField();
         field1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String text = field1.getText();
-                grid[mapFieldToCoordinates.get(field1).y][mapFieldToCoordinates.get(field1).x].setText(text);
-                mapFieldToCoordinates.put(field1, new Point(mapFieldToCoordinates.get(field1).y, mapFieldToCoordinates.get(field1).x));
-                grid[mapFieldToCoordinates.get(field1).y][mapFieldToCoordinates.get(field1).x] = field1;
+                JButton b = new JButton();
+                fillTextField(sudButtons, mapFieldToCoordinates, grid, coordinatesButtton, field1);
+
             }
         });
+
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
                 start();
             }
         });
-
-        button2.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
+        JTextField field2 = new JTextField();
+        field2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                button2.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("Pricol3");
+                        int r = mapFieldToCoordinates.get(field2).y;
+                        int k = mapFieldToCoordinates.get(field2).x;
+                        String s = g.numberHint(grid, r, k);
+                        System.out.println("Число для подсказки: " + s);
+                        grid[r][k].setText(s);
+                        mapFieldToCoordinates.put(field2, new Point(r, k));
+                        grid[r][k] = field2;
+                    }
+                });
             }
         });
+
 
         button3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(g.checkSudoku(grid)){
+                Point p = new Point();
+                if (g.checkSudoku(grid)) {
                     createNewGame();
+                } else {
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 9; j++) {
+                            p = g.coorJTextF(grid, i, j);
+                            grid[(int) p.getX()][(int) p.getY()].setBackground(Color.CYAN);
+                        }
+                    }
                 }
             }
         });
-
     }
 
-    public void fillTextField(JButton[][] sudButtons, Map<JTextField, Point> mapFieldToCoordinates, JTextField[][] grid, Map<JButton, Point> coordinatesButton) {
-        for (int i = 0; i < 9; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                JTextField field = new JTextField();
-                sudButtons[i/3][j/3].addActionListener(new ActionListener() {
+    public void fillTextField(JButton[][] sudButtons, Map<JTextField, Point> mapFieldToCoordinates, JTextField[][] grid, Map<JButton, Point> coordinatesButton, JTextField field1) {
+        for (int y = 0; y < 3; ++y) {
+            for (int x = 0; x < 3; ++x) {
+                sudButtons[y][x].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         JButton button = (JButton) e.getSource();
                         String text = button.getText();
-                        field.setText(text);
-                        grid[mapFieldToCoordinates.get(field).y][mapFieldToCoordinates.get(field).x].setText(text);
-                        mapFieldToCoordinates.put(field, new Point(mapFieldToCoordinates.get(field).y, mapFieldToCoordinates.get(field).x));
-                        grid[mapFieldToCoordinates.get(field).y][mapFieldToCoordinates.get(field).x] = field;
+                        grid[mapFieldToCoordinates.get(field1).y][mapFieldToCoordinates.get(field1).x].setText(text);
+                        mapFieldToCoordinates.put(field1, new Point(mapFieldToCoordinates.get(field1).y, mapFieldToCoordinates.get(field1).x));
+                        grid[mapFieldToCoordinates.get(field1).y][mapFieldToCoordinates.get(field1).x] = field1;
                     }
                 });
-            }
-        }
+            }}
     }
 
-    private void createNewGame(){
+
+    // создание окна с выводом результата игры
+    private void createNewGame() {
         Font FONT = new Font("Times New Roman", Font.CENTER_BASELINE, 20);
         JFrame frame = new JFrame("Результат");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -243,7 +263,7 @@ class SudokuGUI extends JFrame {
         Font font = new Font("Times New Roman", Font.BOLD, 20);
         titleLabel.setFont(font);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        frame.add(titleLabel,BorderLayout.CENTER);
+        frame.add(titleLabel, BorderLayout.CENTER);
         frame.setSize(300, 100);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
