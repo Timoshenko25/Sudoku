@@ -3,11 +3,15 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 class SudokuGUI extends JFrame {
     private JPanel buttonSelectionPanel;
+    private Point p1 = new Point();
 
     // метод для создания первого frame, где будет выбираться сложность игры
     public void start() {
@@ -18,7 +22,7 @@ class SudokuGUI extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JLabel titleLabel = new JLabel("Игра Судоку");
-        Font font = new Font("Times New Roman", Font.BOLD, 20);
+        Font font = new Font("Times New Roman", Font.BOLD, 30);
         titleLabel.setFont(font);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(titleLabel);
@@ -136,7 +140,7 @@ class SudokuGUI extends JFrame {
                 JButton but = new JButton(String.valueOf(i));
                 coordinatesButtton.put(but, new Point(x, y));
                 sudButtons[y][x] = but;
-                buttonPanel.add(but);
+                buttonPanel.add(sudButtons[y][x]);
                 i++;
             }
         }
@@ -183,53 +187,49 @@ class SudokuGUI extends JFrame {
         frame.setSize(800, 500);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        JTextField field1 = new JTextField();
-        field1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton b = new JButton();
-                fillTextField(sudButtons, mapFieldToCoordinates, grid, coordinatesButtton, field1);
-
-            }
-        });
-
-        button1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose(); // Закрытие текущего окна
-                start();
-            }
-        });
-        JTextField field2 = new JTextField();
-        field2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                button2.addActionListener(new ActionListener() {
-                    @Override
+        getAllActiveTextFields(grid);
+        JTextField field3 = new JTextField();
+        for (i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                sudButtons[i][j].addActionListener(new ActionListener() { //Обрабока действий кнопок
                     public void actionPerformed(ActionEvent e) {
-                        System.out.println("Pricol3");
-                        int r = mapFieldToCoordinates.get(field2).y;
-                        int k = mapFieldToCoordinates.get(field2).x;
-                        String s = g.numberHint(grid, r, k);
-                        System.out.println("Число для подсказки: " + s);
-                        grid[r][k].setText(s);
-                        mapFieldToCoordinates.put(field2, new Point(r, k));
-                        grid[r][k] = field2;
+                        JButton clickedButton = (JButton) e.getSource();
+                        getAllActiveTextFields(grid);//Получение координат курсора
+                        String text = clickedButton.getText(); // Получение значения кнопки
+                        grid[p1.x][p1.y].setText(text);
                     }
                 });
             }
+        }
+
+        button1.addActionListener(new ActionListener() { // Обработка действия конпеи "Новая игра"
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // Закрытие текущего окна
+                start();//Запуск игры новой игры
+            }
+        });
+        JTextField field2 = new JTextField();
+        button2.addActionListener(new ActionListener() {// Обработка действия кнопки "Подсказка"
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getAllActiveTextFields(grid);//получение координат курсора
+                String s = g.numberHint(grid, p1.x, p1.y);// Получение числа для подсказки
+                grid[p1.x][p1.y].setText(s);
+                mapFieldToCoordinates.put(field2, new Point(p1.x, p1.y));
+            }
         });
 
 
-        button3.addActionListener(new ActionListener() {
+        button3.addActionListener(new ActionListener() {//Обработка действия кнопки "Проверка"
             public void actionPerformed(ActionEvent e) {
-                Point p = new Point();
-                if (g.checkSudoku(grid)) {
-                    createNewGame();
+                Point p;
+                if (g.checkSudoku(grid)) { // Проверка заполнения
+                    createNewGame(); // Открытия окна с результатом
                 } else {
                     for (int i = 0; i < 9; i++) {
                         for (int j = 0; j < 9; j++) {
-                            p = g.coorJTextF(grid, i, j);
-                            grid[(int) p.getX()][(int) p.getY()].setBackground(Color.CYAN);
+                            p = new Point(g.coorJTextF(grid, i, j)); // Получение координат где ошибка
+                            grid[(int) p.getX()][(int) p.getY()].setBackground(Color.RED); // Выделение ячейк где ошибки
                         }
                     }
                 }
@@ -237,24 +237,30 @@ class SudokuGUI extends JFrame {
         });
     }
 
-    public void fillTextField(JButton[][] sudButtons, Map<JTextField, Point> mapFieldToCoordinates, JTextField[][] grid, Map<JButton, Point> coordinatesButton, JTextField field1) {
-        for (int y = 0; y < 3; ++y) {
-            for (int x = 0; x < 3; ++x) {
-                sudButtons[y][x].addActionListener(new ActionListener() {
+    // Метод для получения координат курсора
+    public void getAllActiveTextFields(JTextField[][] grid) {
+        for (int y = 0; y < 9; ++y) {
+            for (int x = 0; x < 9; ++x) {
+                int finalY = y;
+                int finalX = x;
+                grid[y][x].addFocusListener(new FocusListener() {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
-                        JButton button = (JButton) e.getSource();
-                        String text = button.getText();
-                        grid[mapFieldToCoordinates.get(field1).y][mapFieldToCoordinates.get(field1).x].setText(text);
-                        mapFieldToCoordinates.put(field1, new Point(mapFieldToCoordinates.get(field1).y, mapFieldToCoordinates.get(field1).x));
-                        grid[mapFieldToCoordinates.get(field1).y][mapFieldToCoordinates.get(field1).x] = field1;
+                    public void focusGained(FocusEvent e) {
+                        System.out.println("Фокус установлен на текстовом поле.");
+                        p1 = new Point(finalY, finalX);
+                    }
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        System.out.println("Фокус убран с текстового поля.");
                     }
                 });
-            }}
+            }
+        }
     }
 
 
-    // создание окна с выводом результата игры
+    // Создание окна с выводом результата игры
     private void createNewGame() {
         Font FONT = new Font("Times New Roman", Font.CENTER_BASELINE, 20);
         JFrame frame = new JFrame("Результат");

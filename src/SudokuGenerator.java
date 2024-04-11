@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.Point;
-import java.net.SocketOption;
 import java.util.HashMap;
 
 public class SudokuGenerator {
@@ -8,27 +7,18 @@ public class SudokuGenerator {
     HashMap<JTextField, Point> mapFieldToCoordinates = new HashMap<>();
     String[][] mas = new String[9][9];
 
-    public Point coorJTextF(JTextField[][] grid,int i,int j) {
+    public Point coorJTextF(JTextField[][] grid,int i,int j) { // Метод для получение координая ошибки
         Point p = new Point();
-                if (!grid[i][j].getText().equals(String.valueOf(mas[i][j]))) {
+                if (!grid[i][j].getText().equals(String.valueOf(mas[i][j]))) { // Проверка двых массивов
                     p = new Point(i, j);
                     return p;
                 }
         return p;
     }
 
-    public String[][] max(JTextField[][] grid) {
-        String[][] mas = new String[9][9];
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                mas[i][j] = grid[i][j].getText();
-            }
-        }
-        return mas;
-    }
 
-    public String numberHint(JTextField[][] grid,int r, int k) {
-        String s = "55";
+    public String numberHint(JTextField[][] grid,int r, int k) { // Метод для получения числа по переданным координатам
+        String s = null;
         if (grid[r][k].getText().equals("")) {
             s = mas[r][k];
             System.out.println("Pricol"+s);
