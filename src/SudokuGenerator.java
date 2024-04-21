@@ -4,24 +4,22 @@ import java.util.HashMap;
 
 public class SudokuGenerator {
     final JTextField[][] grid = new JTextField[9][9];
-    HashMap<JTextField, Point> mapFieldToCoordinates = new HashMap<>();
     String[][] mas = new String[9][9];
 
-    public Point coorJTextF(JTextField[][] grid,int i,int j) { // Метод для получение координая ошибки
-        Point p = new Point();
-                if (!grid[i][j].getText().equals(String.valueOf(mas[i][j]))) { // Проверка двых массивов
-                    p = new Point(i, j);
-                    return p;
-                }
-        return p;
+    // Метод для получение координат ошибки
+    public int[] coorJTextF(JTextField[][] grid, int i, int j) {
+        if (!grid[i][j].getText().equals(String.valueOf(mas[i][j]))) { // Проверка двух массивов
+            return new int[] {i, j};
+        }
+        return null;
     }
 
 
-    public String numberHint(JTextField[][] grid,int r, int k) { // Метод для получения числа по переданным координатам
+    // Метод для получения числа по переданным координатам
+    public String numberHint(JTextField[][] grid, int r, int k) {
         String s = null;
         if (grid[r][k].getText().equals("")) {
             s = mas[r][k];
-            System.out.println("Pricol"+s);
             return s;
         }
         return s;
@@ -38,13 +36,13 @@ public class SudokuGenerator {
         }
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if(grid[i][j].getText().equals(String.valueOf(mas[i][j]))){
-                     a = true;
-                }
-                else {
+                if (grid[i][j].getText().equals(String.valueOf(mas[i][j]))) {
+                    a = true;
+                } else {
                     return false;
                 }
-            }}
+            }
+        }
         return a;
     }
 

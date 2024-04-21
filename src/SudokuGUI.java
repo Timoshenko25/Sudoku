@@ -8,6 +8,10 @@ import java.awt.event.FocusListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 class SudokuGUI extends JFrame {
     private JPanel buttonSelectionPanel;
@@ -17,32 +21,54 @@ class SudokuGUI extends JFrame {
     public void start() {
         JFrame frame = new JFrame("Игра Судоку");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) { //метод рисования
+                super.paintComponent(g);
+                try {
+                    BufferedImage image = ImageIO.read(new File("C:\\work\\pol3.jpg")); //  путь к изображению
+                    g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
 
-        JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
         JLabel titleLabel = new JLabel("Игра Судоку");
-        Font font = new Font("Times New Roman", Font.BOLD, 30);
+        Font font = new Font("Times New Roman", Font.BOLD, 40);
         titleLabel.setFont(font);
+        titleLabel.setForeground(Color.black.brighter());
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(Box.createRigidArea(new Dimension(0, 75)));
         panel.add(titleLabel);
-
+        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        JLabel titleLabel1 = new JLabel("Сложность игры");
+        Font font1 = new Font("Times New Roman", Font.BOLD, 30);
+        titleLabel1.setFont(font1);
+        titleLabel1.setForeground(Color.black.brighter());
+        titleLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(titleLabel1);
+        Font FONT = new Font("Times New Roman", Font.CENTER_BASELINE, 30);
         JButton button1 = new JButton("Легкое");
         JButton button2 = new JButton("Среднее");
         JButton button3 = new JButton("Сложное");
-        button1.setBackground(Color.CYAN);
-        button2.setBackground(Color.CYAN);
-        button3.setBackground(Color.CYAN);
+
+        button1.setFont(FONT);
+        button2.setFont(FONT);
+        button3.setFont(FONT);
+        button1.setBackground(Color.lightGray);
+        button2.setBackground(Color.lightGray);
+        button3.setBackground(Color.lightGray);
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
         button2.setAlignmentX(Component.CENTER_ALIGNMENT);
         button3.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         panel.add(Box.createRigidArea(new Dimension(0, 10))); // Пространство между компонентами
-
         panel.add(button1);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));// Пространство между компонентами
         panel.add(button2);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));// Пространство между компонентами
         panel.add(button3);
 
         frame.add(panel);
@@ -50,24 +76,24 @@ class SudokuGUI extends JFrame {
         frame.setSize(800, 500);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        button1.addActionListener(new ActionListener() {
+        button1.addActionListener(new ActionListener() {// обработка действаия кнопки
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
-                createNewGameWindow(5);
+                createNewGameWindow(30);// открытие нового окна
             }
         });
 
-        button2.addActionListener(new ActionListener() {
+        button2.addActionListener(new ActionListener() {// обработка действаия кнопки
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
-                createNewGameWindow(50);
+                createNewGameWindow(45);// открытие нового окна
             }
         });
 
-        button3.addActionListener(new ActionListener() {
+        button3.addActionListener(new ActionListener() {// обработка действаия кнопки
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
-                createNewGameWindow(60);
+                createNewGameWindow(60);// открытие нового окна
             }
         });
     }
@@ -81,11 +107,12 @@ class SudokuGUI extends JFrame {
         final Map<JButton, Point> coordinatesButtton = new HashMap<>();
         final JPanel gridPanel = new JPanel();
         final JButton[][] sudButtons = new JButton[3][3];
-        JFrame frame = new JFrame("Судоку");
+        JFrame frame = new JFrame("Судоку"); // Создание frama
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gridPanel.setLayout(new GridLayout(3, 3));
-        gridPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        gridPanel.setBorder(BorderFactory.createLineBorder(Color.black, 2));
         gridPanel.setPreferredSize(new Dimension(300, 200));
+        // Создание массива JTextField 9 на 9
         for (int y = 0; y < dimension; ++y) {
             for (int x = 0; x < dimension; ++x) {
                 JTextField field = new JTextField();
@@ -93,6 +120,7 @@ class SudokuGUI extends JFrame {
                 grid[y][x] = field;
             }
         }
+        // Заполнение массива числами
         SudokuGenerator g = new SudokuGenerator();
         JTextField[][] generatedSudoku = g.generateRandomSudoku(grid, k);
         for (int y = 0; y < 9; ++y) {
@@ -100,12 +128,12 @@ class SudokuGUI extends JFrame {
                 grid[y][x].setText(generatedSudoku[y][x].getText());
             }
         }
-        Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
+        Border border = BorderFactory.createLineBorder(Color.black, 1);
         Dimension fieldDimension = new Dimension(30, 30);
         for (int y = 0; y < dimension; ++y) {
             for (int x = 0; x < dimension; ++x) {
                 JTextField field = grid[y][x];
-                field.setBorder(border);
+                field.setBorder(border);//добавление рамка для  JTextField
                 field.setFont(FONT);
                 field.setPreferredSize(fieldDimension);
             }
@@ -113,13 +141,13 @@ class SudokuGUI extends JFrame {
         int miniDimension = (int) Math.sqrt(dimension);
         gridPanel.setLayout(new GridLayout(miniDimension, miniDimension));
         JPanel[][] minisquarePanels = new JPanel[miniDimension][miniDimension];
-        Border minisquareBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
-
+        Border minisquareBorder = BorderFactory.createLineBorder(Color.black, 1);
+        // создание массива 3 на 3
         for (int y = 0; y < miniDimension; ++y) {
             for (int x = 0; x < miniDimension; ++x) {
                 JPanel panel = new JPanel();
                 panel.setLayout(new GridLayout(miniDimension, miniDimension));
-                panel.setBorder(minisquareBorder);
+                panel.setBorder(minisquareBorder); //добавление рамка для панели
                 minisquarePanels[y][x] = panel;
                 gridPanel.add(panel);
             }
@@ -131,25 +159,35 @@ class SudokuGUI extends JFrame {
                 minisquarePanels[minisquareY][minisquareX].add(grid[y][x]);
             }
         }
-        gridPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+
+        gridPanel.setBorder(BorderFactory.createLineBorder(Color.black, 2));
         JPanel buttonPanel = new JPanel();
         int i = 1;
+        // Создание массива кнопок от 1 до 9
         buttonPanel.setLayout(new GridLayout(3, 1));
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 3; ++x) {
                 JButton but = new JButton(String.valueOf(i));
                 coordinatesButtton.put(but, new Point(x, y));
                 sudButtons[y][x] = but;
+                but.setBackground(Color.lightGray);
+                but.setFont(new Font("Times New Roman", Font.CENTER_BASELINE, 25));
                 buttonPanel.add(sudButtons[y][x]);
                 i++;
             }
-        }
+        }Font FONT1 = new Font("Times New Roman", Font.CENTER_BASELINE, 25);
         JButton button1 = new JButton("Новая игра");
         JButton button2 = new JButton("Подсказка");
         JButton button3 = new JButton("Проверка");
-        button1.setBackground(Color.CYAN);
-        button2.setBackground(Color.CYAN);
-        button3.setBackground(Color.CYAN);
+        button1.setLayout(new GridLayout(50, 30));
+        button2.setLayout(new GridLayout(50, 30));
+        button3.setLayout(new GridLayout(50, 30));
+        button1.setBackground(Color.lightGray);
+        button2.setBackground(Color.lightGray);
+        button3.setBackground(Color.lightGray);
+        button1.setFont(FONT1);
+        button2.setFont(FONT1);
+        button3.setFont(FONT1);
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
         button2.setAlignmentX(Component.CENTER_ALIGNMENT);
         button3.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -168,7 +206,6 @@ class SudokuGUI extends JFrame {
         mainPanel.add(topPanel);
         mainPanel.add(buttonPanel);
         mainPanel.add(bottomPanel);
-
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -188,7 +225,6 @@ class SudokuGUI extends JFrame {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         getAllActiveTextFields(grid);
-        JTextField field3 = new JTextField();
         for (i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 sudButtons[i][j].addActionListener(new ActionListener() { //Обрабока действий кнопок
@@ -201,8 +237,7 @@ class SudokuGUI extends JFrame {
                 });
             }
         }
-
-        button1.addActionListener(new ActionListener() { // Обработка действия конпеи "Новая игра"
+        button1.addActionListener(new ActionListener() { // Обработка действия кнопоки "Новая игра"
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Закрытие текущего окна
                 start();//Запуск игры новой игры
@@ -222,16 +257,17 @@ class SudokuGUI extends JFrame {
 
         button3.addActionListener(new ActionListener() {//Обработка действия кнопки "Проверка"
             public void actionPerformed(ActionEvent e) {
-                Point p;
                 if (g.checkSudoku(grid)) { // Проверка заполнения
                     createNewGame(); // Открытия окна с результатом
                 } else {
                     for (int i = 0; i < 9; i++) {
                         for (int j = 0; j < 9; j++) {
-                            p = new Point(g.coorJTextF(grid, i, j)); // Получение координат где ошибка
-                            grid[(int) p.getX()][(int) p.getY()].setBackground(Color.RED); // Выделение ячейк где ошибки
-                        }
-                    }
+                            int[] mas = g.coorJTextF(grid, i, j);//получение массива координат где ошибка
+                            if (mas != null) {
+                                Point p = new Point(mas[0], mas[1]);
+                                grid[(int) p.getX()][(int) p.getY()].setBackground(Color.RED);// Выделение ячейк где ошибки
+                            }
+                        } }
                 }
             }
         });
@@ -243,7 +279,7 @@ class SudokuGUI extends JFrame {
             for (int x = 0; x < 9; ++x) {
                 int finalY = y;
                 int finalX = x;
-                grid[y][x].addFocusListener(new FocusListener() {
+                grid[y][x].addFocusListener(new FocusListener() { //отслеживание и обработка курсора
                     @Override
                     public void focusGained(FocusEvent e) {
                         System.out.println("Фокус установлен на текстовом поле.");
@@ -262,11 +298,10 @@ class SudokuGUI extends JFrame {
 
     // Создание окна с выводом результата игры
     private void createNewGame() {
-        Font FONT = new Font("Times New Roman", Font.CENTER_BASELINE, 20);
         JFrame frame = new JFrame("Результат");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JLabel titleLabel = new JLabel("Игра успешно решена!");
-        Font font = new Font("Times New Roman", Font.BOLD, 20);
+        Font font = new Font("Times New Roman", Font.BOLD, 30);
         titleLabel.setFont(font);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         frame.add(titleLabel, BorderLayout.CENTER);
